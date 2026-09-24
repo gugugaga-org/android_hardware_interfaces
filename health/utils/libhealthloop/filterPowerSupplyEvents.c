@@ -50,9 +50,11 @@ static inline uint32_t match_power_supply(struct __sk_buff* skb, unsigned int of
 }
 
 // The Linux kernel 5.4 BPF verifier rejects this program, probably because of its size. Hence the
-// restriction that the kernel version must be at least 5.10.
-DEFINE_BPF_PROG_KVER("skfilter/power_supply", AID_ROOT, AID_SYSTEM, skfilter_power_supply,
-                     KVER(5, 10, 0))
+// restriction that the kernel version must be at least 5.10. Older kernels can still filter these
+// uevents in HealthLoop's userspace path, so failure to load this optimization must not fail the
+// critical healthd BPF object.
+DEFINE_OPTIONAL_BPF_PROG_KVER("skfilter/power_supply", AID_ROOT, AID_SYSTEM,
+                              skfilter_power_supply, KVER(5, 10, 0))
 (struct __sk_buff* skb) {
     uint32_t i;
 
